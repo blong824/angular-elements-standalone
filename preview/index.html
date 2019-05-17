@@ -1,5 +1,68 @@
 <html>
+  <head>
+      <link type="text/css" href="./styles.css">
+      <script src="./demo.js"></script>
+      <style>
+        .home-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px; padding: 20px; }
+        #name {margin: 0 10px} 
+        .element-container { display: flex; flex-wrap: wrap }
+        app-hello { margin: 10px; border: 1px solid lightgray; padding: 10px; }
+        h1 { text-align: center}
+      </style>
+  </head>
   <body>
-    <app-hello></app-hello>
+    <h1>Web Components Demo</h1>
+    <div class="home-container">
+      <div>
+        <label>Name</label>
+        <input id="name"/>
+        <button type="button" id="add-element">Add element</button>
+      </div>
+      <div>
+        <div class="element-data"></div>
+      </div>
+    </div>
+    <div class="element-container"></div>
+    <script>
+      const elementData = document.querySelector('.element-data');
+      function listenForData(event) {
+          if (event && event.detail) {
+          const name = (event.detail.name) ? event.detail.name : 'no one';
+          let html = `<h3>Data from ${name}'s web component</h3>`;
+          html += `
+          <div>
+            <div>Api Info</div>
+            <div class="version">External : ${event.detail.externalVersion}</div>
+            <div class="version">Internal : ${event.detail.internalVersion}</div>
+          </div>
+          <div>Count: ${event.detail.count}</div>
+          `;
+          html += (event.detail.result) ?
+          `
+          <div>
+            <div>Gross pay: ${event.detail.result.content.grossPay}</div>
+            <div>Federal: ${event.detail.result.content.federal}</div>
+            <div>Fica: ${event.detail.result.content.fica}</div>
+            <div>Medicare: ${event.detail.result.content.medicare}</div>
+            <div>State: ${event.detail.result.content.state}</div>
+            <hr/>
+            <div>Net pay: ${event.detail.result.content.netPay}</div>
+          </div>` : '';
+          
+          elementData.innerHTML = html;
+          }
+      };
+
+      const addButton = document.getElementById('add-element');
+      const elContainer = document.querySelector('.element-container');
+      addButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const nameValue = document.getElementById('name').value;
+        const el = document.createElement('app-hello');
+        el.setAttribute('name', nameValue);
+        el.addEventListener('webClicked', listenForData);
+        elContainer.appendChild(el);
+      });
+    </script>
   </body>
 </html>
